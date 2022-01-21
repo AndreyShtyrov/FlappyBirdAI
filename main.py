@@ -8,11 +8,15 @@ from kivy.uix.scatter import Scatter
 from kivy.properties import StringProperty
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 from kivy.clock import Clock
 from kivy.graphics import *
+from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
 from Bird import BirdWidget
 from Pipe import PipWidget
+from kivy.lang import Builder
+
 
 
 class Picture(Scatter):
@@ -91,7 +95,14 @@ class DrawTool(Widget):
                 if 350 + pipe.height_shift > bird_pos[1] + 30 and bird_pos[1] > 200 + pipe.height_shift:
                     return
                 else:
+                    self.game_over()
                     self.bird.is_alive = False
+
+    def game_over(self):
+        game_over = RelativeLayout(size=(200, 200), pos=(300, 300))
+        game_over.add_widget(Label(text='GameOver', size=(200, 200)))
+        self.add_widget(game_over)
+
 
 
 class PicturesApp(App):
