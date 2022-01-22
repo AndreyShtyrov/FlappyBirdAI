@@ -35,7 +35,3 @@ class BirdWidget(RelativeLayout):
         result.append((center[0], center[1] + size[1]))
         result.append((center[0], center[1]))
         return result
-
-
-
-
