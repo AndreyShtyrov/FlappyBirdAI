@@ -1,5 +1,7 @@
 import kivy
-kivy.require('1.0.6')
+kivy.require('1.9.0')
+
+from kivy.config import Config
 
 from random import randint
 from kivy.app import App
@@ -17,6 +19,7 @@ from Bird import BirdWidget
 from Pipe import PipWidget
 from kivy.lang import Builder
 
+from kivy.core.window import Window
 
 
 class Picture(Scatter):
@@ -33,14 +36,18 @@ class DrawTool(RelativeLayout):
         self.add_widget(self.bird)
         self.bird.pos = (200, 300)
         self.pipes = []
+        self.pause = False
         Clock.schedule_interval(self.main_loop, 0.005)
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
-        self.x_pos_pipe_creation = 800
+        self.x_pos_pipe_creation = 1200
 
     def main_loop(self, dt):
+        if self.pause:
+            return
         print("start main loop")
         if not self.bird.is_alive:
+            self.game_over()
             return False
         self.create_pipe(dt)
         print(dt)
@@ -49,14 +56,14 @@ class DrawTool(RelativeLayout):
         print(old_pos)
         if old_pos[1] >= 0:
             new_pos = (old_pos[0], old_pos[1] + self.bird.calculate_current_bird_velocity())
-            self.bird.pos = new_pos
+            self.bird.move(new_pos)
         for pipe in self.pipes:
             old_pos = pipe.pos
             pipe.pos = (old_pos[0] - 2, old_pos[1])
         if len(self.pipes) == 0:
             return
         first_pipe = self.pipes[0]
-        if first_pipe.pos[0] < 100:
+        if first_pipe.pos[0] < -100:
             self.remove_widget(first_pipe)
             self.pipes.remove(first_pipe)
         self.check_colision()
@@ -71,6 +78,8 @@ class DrawTool(RelativeLayout):
             self.bird.jump()
         if keycode[1] == "esc":
             exit()
+        if keycode[1] == "tab":
+            self.pause = not self.pause
 
     def create_pipe(self, dt):
         if len(self.pipes) == 0:
@@ -89,28 +98,25 @@ class DrawTool(RelativeLayout):
             self.pipes.append(new_pipe)
 
     def check_colision(self):
-        bird_pos = self.bird.pos
+        four_bird_points = self.bird.get_four_points()
         for pipe in self.pipes:
-            pipe_pos = pipe.pos
-            if pipe_pos[0] - 35 < bird_pos[0] < pipe_pos[0] + 35 + 30:
-                if 350 + pipe.height_shift > bird_pos[1] + 30 and bird_pos[1] > 200 + pipe.height_shift:
-                    return
-                else:
-                    self.game_over()
-                    self.bird.is_alive = False
+            if pipe.check_collide(four_bird_points):
+                self.bird.is_alive = False
 
     def game_over(self):
-        game_over = RelativeLayout(size=(200, 200), pos=(300, 300))
-        game_over.add_widget(Label(text='GameOver', size=(200, 200)))
+        game_over = RelativeLayout(pos_hint={"x": -0.1, "top": 1.2})
+        game_over.add_widget(Label(text='GameOver'))
         self.add_widget(game_over)
+
+    def on_touch_down(self, touch):
+        super().on_touch_down(touch)
+        print(touch.pos)
 
 
 
 class PicturesApp(App):
 
     def build(self):
-
-
         root = DrawTool()
         return root
 
