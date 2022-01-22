@@ -37,6 +37,7 @@ class DrawTool(RelativeLayout):
         self.bird.pos = (200, 300)
         self.pipes = []
         self.pause = False
+        self.horizon_shift = 0
         Clock.schedule_interval(self.main_loop, 0.005)
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
@@ -88,14 +89,16 @@ class DrawTool(RelativeLayout):
             self.add_widget(new_pipe)
             new_pipe.pos = self.x_pos_pipe_creation, -100 + height_shift
             self.pipes.append(new_pipe)
+            self.horizon_shift = randint(0, 300)
             return
         last_pipe = self.pipes[-1]
-        if abs(last_pipe.pos[0] - self.x_pos_pipe_creation) > 150:
+        if abs(last_pipe.pos[0] - self.x_pos_pipe_creation) > 150 + self.horizon_shift:
             height_shift = randint(-100, 100)
             new_pipe = PipWidget(height_shift)
             self.add_widget(new_pipe)
             new_pipe.pos = self.x_pos_pipe_creation, -100 + height_shift
             self.pipes.append(new_pipe)
+            self.horizon_shift = randint(0, 300)
 
     def check_colision(self):
         four_bird_points = self.bird.get_four_points()

@@ -8,8 +8,8 @@ class PipWidget(RelativeLayout):
         super().__init__()
         self.height_shift = height_shift
         with self.canvas:
-            self.up_pipe = Rectangle(source='up_pipe.png', size=(90, 800), pos=(0, 550))
-            self.down_pipe = Rectangle(source='down_pipe.png', size=(90, 800), pos=(0, -550))
+            self.up_pipe = Rectangle(source='up_pipe.png', size=(90, 800), pos=(0, 470))
+            self.down_pipe = Rectangle(source='down_pipe.png', size=(90, 800), pos=(0, -470))
 
     def check_collide(self, four_points: list):
         left_border = self.pos[0]
