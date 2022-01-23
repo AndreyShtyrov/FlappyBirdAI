@@ -42,7 +42,7 @@ class DrawTool(RelativeLayout):
         self.change_text_delegate(int(self.score // 100))
         self.create_pipe(dt)
 
-        if self.score > 1000:
+        if self.score % 1000 == 0:
             self.x_speed_multiplier += 1
         print(dt)
         old_pos = self.bird.pos
