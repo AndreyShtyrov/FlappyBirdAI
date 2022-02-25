@@ -15,7 +15,7 @@ class DrawTool(RelativeLayout):
     def __init__(self):
         super().__init__()
         self.change_text_delegate = None
-        Clock.schedule_interval(self.main_loop, 0.005)
+        Clock.schedule_interval(self.main_loop, 0.001)
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.game_modes = []
@@ -24,6 +24,7 @@ class DrawTool(RelativeLayout):
         self.pause = False
 
     def main_loop(self, dt):
+        print(dt)
         if self.pause:
             return
         print("start main loop")
