@@ -40,6 +40,9 @@ class GameMode():
         new_pos = (old_pos[0], old_pos[1] + self.bird.calculate_current_bird_velocity())
         if self.draw_tool.size[1] > new_pos[1] >= 0:
             self.bird.move(new_pos)
+        else:
+            self.bird.is_alive = False
+            return
         for pipe in self.pipes:
             old_pos = pipe.pos
             pipe.pos = (old_pos[0] - 1 * self.x_speed_multiplier, old_pos[1])
