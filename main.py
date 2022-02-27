@@ -21,14 +21,13 @@ class DrawTool(RelativeLayout):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.game_modes = []
-        self.area = GeneticArea(2)
+        self.generation = 0
+        self.collection_lenght = 40
+        self.area = GeneticArea(self.collection_lenght)
         self.first_loop = True
-        self.game_modes.append(GameMode(self))
-        self.game_modes.append(GameMode(self))
-        # for _ in range(4):
-        #     self.game_modes.append(GameMode(self))
+        for _ in range(self.collection_lenght):
+            self.game_modes.append(GameMode(self))
         self.pause = False
-
 
     def main_loop(self, dt):
         print(dt)
@@ -43,21 +42,22 @@ class DrawTool(RelativeLayout):
         if is_end_game:
             self.game_over()
             return False
-        for game_mode in self.game_modes:
+        if self.first_loop:
+            self.change_text_delegate(self.generation)
+            for game_mode in self.game_modes:
+                game_mode.main_loop(dt)
+            self.first_loop = False
+            return
+        for i, game_mode in enumerate(self.game_modes):
+            if game_mode.is_loose:
+                continue
+            x = game_mode.get_vector_to_learn()
+            y = self.area.make_decision(i, x.reshape((1, 4)))
+            print(i, x, float(y[0][0]))
+            if y > 0.8:
+                game_mode.bird.jump()
             game_mode.main_loop(dt)
-        # if self.first_loop:
-        #     for game_mode in self.game_modes:
-        #         game_mode.main_loop(dt)
-        #     self.first_loop = False
-        #     return
-        # for i, game_mode in enumerate(self.game_modes):
-        #     x = game_mode.get_vector_to_learn()
-        #     # y = self.area.make_decision(i, x)
-        #     print(x)
-        #     # if y > 0.8:
-        #     #     game_mode.bird.jump()
-        #     game_mode.main_loop(dt)
-        #     self.area.individals[i].score = game_mode.score
+            self.area.individals[i].score = game_mode.score
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -83,11 +83,14 @@ class DrawTool(RelativeLayout):
 
     def restart(self):
         self.clear_widgets()
+        self.generation += 1
+        self.change_text_delegate(self.generation)
         self.pause = False
-        # self.area.make_select()
+        self.area.make_select()
         Clock.schedule_interval(self.main_loop, 0.005)
         self.game_modes.clear()
-        self.game_modes.append(GameMode(self))
+        for _ in range(self.collection_lenght):
+            self.game_modes.append(GameMode(self))
 
     def on_touch_down(self, touch):
         super().on_touch_down(touch)
@@ -100,7 +103,7 @@ class ScoreLabel(Label):
         super().__init__()
 
     def change_text(self, value):
-        self.text = "SCORE: " + str(value)
+        self.text = "GEN: " + str(value)
 
 
 class PicturesApp(App):

@@ -45,18 +45,16 @@ class GameMode():
             self.pipes.clear()
             return False
         self.score += 1
-        # self.change_text_delegate(int(self.score // 100))
         self.create_pipe(dt)
 
-        if self.score % 1000 == 0:
-            self.x_speed_multiplier += 1
         old_pos = self.bird.pos
         new_pos = (old_pos[0], old_pos[1] + self.bird.calculate_current_bird_velocity())
         if self.draw_tool.size[1] > new_pos[1] >= 0:
             self.bird.move(new_pos)
         else:
-            self.bird.is_alive = False
-            return
+            if self.draw_tool.size[1] > 300:
+                self.bird.is_alive = False
+                return
         for pipe in self.pipes:
             old_pos = pipe.pos
             pipe.pos = (old_pos[0] - 1 * self.x_speed_multiplier, old_pos[1])
@@ -89,6 +87,8 @@ class GameMode():
     def check_collision(self):
         four_bird_points = self.bird.get_four_points()
         for pipe in self.pipes:
-            if pipe.check_collide(four_bird_points):
+            is_crushed, how_close_to_path = pipe.check_collide(four_bird_points)
+            if is_crushed:
                 self.bird.is_alive = False
+                self.score += min(1/(how_close_to_path/100), 10)
 
