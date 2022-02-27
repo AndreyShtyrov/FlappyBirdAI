@@ -23,14 +23,14 @@ class GameMode():
 
     def get_vector_to_learn(self):
         result = []
-        result.append(self.x_speed_multiplier)
+        result.append(self.bird.y_velocity / 30)
         bird_pos = self.bird.pos
         result.append(bird_pos[1]/self.draw_tool.size[1])
         for pip in self.pipes:
-            pos = pip.pos
-            if pos[0] - bird_pos[0] > 0:
-                result.append((pos[0] - bird_pos[0])/self.draw_tool.size[0])
-                result.append(pos[1] / self.draw_tool.size[1])
+            right_pos = pip.get_right_point()
+            if right_pos - bird_pos[0] > 0:
+                result.append((right_pos - bird_pos[0])/self.draw_tool.size[0])
+                result.append(pip.height_shift / 300)
                 break
         return np.array(result)
 
@@ -90,5 +90,5 @@ class GameMode():
             is_crushed, how_close_to_path = pipe.check_collide(four_bird_points)
             if is_crushed:
                 self.bird.is_alive = False
-                self.score += min(1/(how_close_to_path/100), 10)
+                self.score += 5/(max(how_close_to_path/100, 1))
 

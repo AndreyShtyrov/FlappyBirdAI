@@ -11,6 +11,9 @@ class PipWidget(RelativeLayout):
             self.up_pipe = Rectangle(source='up_pipe.png', size=(90, 800), pos=(0, 470))
             self.down_pipe = Rectangle(source='down_pipe.png', size=(90, 800), pos=(0, -470))
 
+    def get_right_point(self):
+        return self.to_parent(*self.up_pipe.size)[0]
+
     def check_collide(self, four_points: list):
         left_border = self.pos[0]
         if four_points[0][0] < left_border:
