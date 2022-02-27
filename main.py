@@ -6,6 +6,8 @@ from kivy.uix.label import Label
 from kivy.clock import Clock
 from GameMode import GameMode
 from kivy.core.window import Window
+from genetic_optimization import GeneticArea
+import numpy as np
 
 kivy.require('1.9.0')
 
@@ -19,9 +21,14 @@ class DrawTool(RelativeLayout):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.game_modes = []
+        self.area = GeneticArea(2)
+        self.first_loop = True
         self.game_modes.append(GameMode(self))
         self.game_modes.append(GameMode(self))
+        # for _ in range(4):
+        #     self.game_modes.append(GameMode(self))
         self.pause = False
+
 
     def main_loop(self, dt):
         print(dt)
@@ -38,6 +45,19 @@ class DrawTool(RelativeLayout):
             return False
         for game_mode in self.game_modes:
             game_mode.main_loop(dt)
+        # if self.first_loop:
+        #     for game_mode in self.game_modes:
+        #         game_mode.main_loop(dt)
+        #     self.first_loop = False
+        #     return
+        # for i, game_mode in enumerate(self.game_modes):
+        #     x = game_mode.get_vector_to_learn()
+        #     # y = self.area.make_decision(i, x)
+        #     print(x)
+        #     # if y > 0.8:
+        #     #     game_mode.bird.jump()
+        #     game_mode.main_loop(dt)
+        #     self.area.individals[i].score = game_mode.score
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -58,10 +78,13 @@ class DrawTool(RelativeLayout):
         game_over = RelativeLayout(pos_hint={"x": -0.1, "top": 1.2})
         game_over.add_widget(Label(text='GameOver'))
         self.add_widget(game_over)
+        self.first_loop = True
+        self.restart()
 
     def restart(self):
         self.clear_widgets()
         self.pause = False
+        # self.area.make_select()
         Clock.schedule_interval(self.main_loop, 0.005)
         self.game_modes.clear()
         self.game_modes.append(GameMode(self))

@@ -4,8 +4,6 @@ os.environ['TD_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 
 
-
-
 class DenseNN(tf.Module):
     def __init__(self, outputs, activate='relu'):
         super().__init__()
@@ -40,7 +38,7 @@ class DenseNN(tf.Module):
 class Individals():
     def __init__(self):
         self.layer1 = DenseNN(4)
-        self.layer2 = DenseNN(2)
+        self.layer2 = DenseNN(1)
         self.score = 0
 
     def inherit_gen(self, gen: list):
@@ -61,7 +59,7 @@ class GeneticArea():
         self.n_specials = n_specials
         self.generation = 0
         for i in range(n_specials):
-            self.individals.append(Individals)
+            self.individals.append(Individals())
 
     def get_best(self, amount: int) -> list:
         survavals = [self.individals[:amount]]
@@ -102,14 +100,15 @@ class GeneticArea():
             genes.append([(w1, b1), (w2, b2)])
         return genes
 
-    def evolution(self):
+    def make_select(self):
         self.individals = []
         bests = self.get_best(4)
         genes = self.gen_move(bests)
         for gen in genes:
-            individal = Individals
+            individal = Individals()
             individal.inherit_gen(gen)
             self.individals.append(individal)
+
 
     def make_decision(self, i, x):
         return self.individals[i].predict(x)

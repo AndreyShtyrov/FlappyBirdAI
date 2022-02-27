@@ -3,6 +3,7 @@ from random import randint
 from kivy.uix.relativelayout import RelativeLayout
 from Bird import BirdWidget
 from Pipe import PipWidget
+import numpy as np
 
 
 class GameMode():
@@ -19,6 +20,19 @@ class GameMode():
         self.bird.pos = (200, 300)
         self.change_text_delegate = None
         self.x_pos_pipe_creation = 1600
+
+    def get_vector_to_learn(self):
+        result = []
+        result.append(self.x_speed_multiplier)
+        bird_pos = self.bird.pos
+        result.append(bird_pos[1]/self.draw_tool.size[1])
+        for pip in self.pipes:
+            pos = pip.pos
+            if pos[0] - bird_pos[0] > 0:
+                result.append((pos[0] - bird_pos[0])/self.draw_tool.size[0])
+                result.append(pos[1] / self.draw_tool.size[1])
+                break
+        return np.array(result)
 
     def main_loop(self, dt):
         if self.is_loose:
