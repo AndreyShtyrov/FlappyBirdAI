@@ -23,7 +23,7 @@ class GameMode():
 
     def get_vector_to_learn(self):
         result = []
-        result.append(self.bird.y_velocity / 30)
+        result.append(self.bird.bird_velocity / 30)
         bird_pos = self.bird.pos
         result.append(bird_pos[1]/self.draw_tool.size[1])
         for pip in self.pipes:

@@ -37,7 +37,7 @@ class DenseNN(tf.Module):
 
 class Individals():
     def __init__(self):
-        self.layer1 = DenseNN(4)
+        self.layer1 = DenseNN(3)
         self.layer2 = DenseNN(1)
         self.score = 0
 
@@ -71,15 +71,28 @@ class GeneticArea():
         for survavel in survavels:
             genes.append(survavel.get_gen())
         best_gen = genes[-1]
-        for _ in range(amount, self.n_specials):
+        first_part = int(self.n_specials / 3)
+        second_part = int(self.n_specials / 3) * 2
+        for i in range(amount, self.n_specials):
             w1 = best_gen[0][0]
-            w1 = w1 + tf.random.truncated_normal(w1.shape, stddev=0.1)
             b1 = best_gen[0][1]
-            b1 = b1 + tf.random.truncated_normal(b1.shape, stddev=0.1)
             w2 = best_gen[1][0]
-            w2 = w2 + tf.random.truncated_normal(w2.shape, stddev=0.1)
             b2 = best_gen[1][1]
-            b2 = b2 + tf.random.truncated_normal(b1.shape, stddev=0.1)
+            if i < first_part:
+                w1 = w1 + tf.random.truncated_normal(w1.shape, stddev=0.1)
+                b1 = b1 + tf.random.truncated_normal(b1.shape, stddev=0.1)
+                w2 = w2 + tf.random.truncated_normal(w2.shape, stddev=0.1)
+                b2 = b2 + tf.random.truncated_normal(b1.shape, stddev=0.1)
+            elif first_part < i < second_part:
+                w1 = w1 + tf.random.truncated_normal(w1.shape, stddev=0.4)
+                b1 = b1 + tf.random.truncated_normal(b1.shape, stddev=0.4)
+                w2 = w2 + tf.random.truncated_normal(w2.shape, stddev=0.4)
+                b2 = b2 + tf.random.truncated_normal(b1.shape, stddev=0.4)
+            elif second_part < i:
+                w1 = w1 + tf.random.truncated_normal(w1.shape, stddev=2.4)
+                b1 = b1 + tf.random.truncated_normal(b1.shape, stddev=2.4)
+                w2 = w2 + tf.random.truncated_normal(w2.shape, stddev=2.4)
+                b2 = b2 + tf.random.truncated_normal(b1.shape, stddev=2.4)
             genes.append([(w1, b1), (w2, b2)])
         return genes
 

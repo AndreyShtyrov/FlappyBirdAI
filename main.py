@@ -30,7 +30,6 @@ class DrawTool(RelativeLayout):
         self.pause = False
 
     def main_loop(self, dt):
-        print(dt)
         if self.pause:
             return
         print("start main loop")
